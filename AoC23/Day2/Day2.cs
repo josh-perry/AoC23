@@ -102,6 +102,19 @@ public class Day2 : IDay
 
     public string Part2(string input)
     {
-        return string.Empty;
+        var games = LoadGames(input);
+
+        var sum = 0;
+        
+        foreach (var game in games)
+        {
+            var minRedNeeded = game.RevealedSets.Max(x => x.Red);
+            var minGreenNeeded = game.RevealedSets.Max(x => x.Green);
+            var minBlueNeeded = game.RevealedSets.Max(x => x.Blue);
+
+            sum += minRedNeeded * minGreenNeeded * minBlueNeeded;
+        }
+
+        return sum.ToString();
     }
 }
