@@ -28,6 +28,48 @@ public class Day1 : IDay
 
     public string Part2(string input)
     {
-        return string.Empty;
+        var numberStrings = new[]
+        {
+            "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
+        };
+        
+        var regex = new Regex(@"\d");
+        var sum = 0;
+        
+        foreach (var line in input.Split(Environment.NewLine))
+        {
+            if (string.IsNullOrWhiteSpace(line)) continue;
+
+            var numbersInLine = new List<(int Position, int Digit)>();
+
+            foreach (var number in numberStrings)
+            {
+                var firstIndex = line.IndexOf(number);
+                if (firstIndex != -1)
+                {
+                    numbersInLine.Add((firstIndex, Array.IndexOf(numberStrings, number)));
+                }
+
+                var lastIndex = line.LastIndexOf(number);
+                if (lastIndex != -1)
+                {
+                    numbersInLine.Add((lastIndex, Array.IndexOf(numberStrings, number)));
+                }
+            }
+            
+            var matches = regex.Matches(line);
+
+            foreach (Match match in matches)
+            {
+                numbersInLine.Add((match.Index, int.Parse(match.Value)));
+            }
+
+            var first = numbersInLine.OrderBy(x => x.Position).First().Digit;
+            var last = numbersInLine.OrderBy(x => x.Position).Last().Digit;
+            
+            sum += int.Parse(first.ToString() + last.ToString());
+        }
+
+        return sum.ToString();
     }
 }
