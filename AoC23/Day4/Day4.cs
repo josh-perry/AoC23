@@ -8,9 +8,18 @@ public class Day4 : IDay
 
     private class Card
     {
+        public int Id { get; set; }
+        
         public List<int> WinningNumbers { get; init; } = new();
 
         public List<int> RevealedNumbers { get; init; } = new();
+
+        public int Copies { get; set; } = 1;
+
+        public override string ToString()
+        {
+            return Id.ToString();
+        }
     }
 
     private List<Card> ParseCards(string input)
@@ -24,6 +33,7 @@ public class Day4 : IDay
             var match = regex.Match(line);
             cards.Add(new()
             {
+                Id = int.Parse(match.Groups["id"].Value),
                 WinningNumbers = match
                     .Groups["winning"]
                     .Value
@@ -41,7 +51,7 @@ public class Day4 : IDay
 
         return cards;
     }
-    
+
     public string Part1(string input)
     {
         var cards = ParseCards(input);
@@ -64,6 +74,21 @@ public class Day4 : IDay
 
     public string Part2(string input)
     {
-        throw new NotImplementedException();
+        var cards = ParseCards(input);
+
+        foreach (var card in cards)
+        {
+            for (var i = 0; i < card.Copies; i++)
+            {
+                var matches = card.WinningNumbers.Intersect(card.RevealedNumbers).ToList();
+                
+                for (var copyIndex = 0; copyIndex < matches.Count; copyIndex++)
+                {
+                    cards[card.Id + copyIndex].Copies++;
+                }
+            }
+        }
+        
+        return cards.Sum(x => x.Copies).ToString();
     }
 }
