@@ -9,6 +9,7 @@ public class TestDay
     [InlineData(2, "8")]
     [InlineData(3, "4361")]
     [InlineData(4, "13")]
+    [InlineData(5, "35")]
     public void should_give_expected_output_for_mini_input_part_1(int dayNumber, string expected)
     {
         // Arrange
