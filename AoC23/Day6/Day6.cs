@@ -9,9 +9,9 @@ public class Day6 : IDay
 
     private class Race
     {
-        public int Time { get; set; }
+        public long Time { get; set; }
         
-        public int Record { get; set; }
+        public long Record { get; set; }
     }
     
     private List<Race> ParseInput(string input)
@@ -28,10 +28,10 @@ public class Day6 : IDay
                 for (var matchIndex = 0; matchIndex < matches.Count; matchIndex++)
                 {
                     var match = matches[matchIndex];
-
+                    
                     var race = new Race();
                     race.Time = int.Parse(match.Value);
-                    
+
                     races.Add(race);
                 }
             }
@@ -66,7 +66,7 @@ public class Day6 : IDay
         
         return winningStrategyCount;
     }
-    
+
     public string Part1(string input)
     {
         var races = ParseInput(input);
@@ -75,6 +75,15 @@ public class Day6 : IDay
 
     public string Part2(string input)
     {
-        return string.Empty;
+        var races = ParseInput(input);
+
+        var realRaceRecord = long.Parse(string.Concat(races.Select(x => x.Record)));
+        var realRaceTime = long.Parse(string.Concat(races.Select(x => x.Time)));
+
+        return  CalculateNumberOfWaysToWin(new()
+        {
+            Record = realRaceRecord,
+            Time = realRaceTime
+        }).ToString();
     }
 }
