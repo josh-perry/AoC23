@@ -89,21 +89,52 @@ public class Day7 : IDay
 
         return hands;
     }
+    
+    private class CardCollection
+    {
+        public int Value { get; set; }
+        
+        public int Count { get; set; }
+    }
 
-    public void DetermineHandType(Hand hand)
+    public void DetermineHandType(Hand hand, bool jokerRule = false)
     {
         var valueFrequencies = hand.Cards.GroupBy(card => card)
-            .Select(group => group.Count())
-            .OrderByDescending(count => count)
+            .Select(group => new CardCollection { Value = group.Key, Count = group.Count() })
+            .OrderByDescending(count => count.Count)
             .ToList();
 
-        hand.Type = valueFrequencies[0] switch
+        if (jokerRule)
+        {
+            var jokers = valueFrequencies.FirstOrDefault(x => x.Value == 0);
+
+            if (jokers?.Count > 0)
+            {
+                if (jokers.Count == 5)
+                {
+                    // All jokers
+                    hand.Type = HandType.FiveOfAKind;
+                    return;
+                }
+                
+                var highestNonJoker = valueFrequencies.OrderByDescending(x => x.Count).ThenByDescending(x => x.Value).First(x => x.Value != 0);
+                highestNonJoker.Count += jokers.Count;
+                
+                valueFrequencies = valueFrequencies
+                    .Where(x => x.Value != 0)
+                    .OrderByDescending(x => x.Count)
+                    .ThenByDescending(x => x.Value)
+                    .ToList();
+            }
+        }
+
+        hand.Type = valueFrequencies[0].Count switch
         {
             5 => HandType.FiveOfAKind,
             4 => HandType.FourOfAKind,
-            3 when valueFrequencies[1] == 2 => HandType.FullHouse,
+            3 when valueFrequencies[1].Count == 2 => HandType.FullHouse,
             3 => HandType.ThreeOfAKind,
-            2 when valueFrequencies[1] == 2 => HandType.TwoPairs,
+            2 when valueFrequencies[1].Count == 2 => HandType.TwoPairs,
             2 => HandType.OnePair,
             _ => HandType.HighCard
         };
@@ -112,7 +143,7 @@ public class Day7 : IDay
     public string Part1(string input)
     {
         var hands = ParseInput(input);
-        hands.ForEach(DetermineHandType);
+        hands.ForEach(x => DetermineHandType(x));
 
         var total = 0;
         var rank = 0;
@@ -130,6 +161,24 @@ public class Day7 : IDay
 
     public string Part2(string input)
     {
-        return string.Empty;
+        var hands = ParseInput(input);
+        hands.ForEach(h =>
+        {
+            h.Cards = h.Cards.Select(c => c == 11 ? 0 : c).ToList();
+        });
+        hands.ForEach(x => DetermineHandType(x, true));
+
+        var total = 0;
+        var rank = 0;
+
+        var orderedHands = hands.OrderByDescending(x => x);
+
+        foreach (var hand in orderedHands)
+        {
+            rank++;
+            total += hand.Bet * rank;
+        }
+
+        return total.ToString();
     }
 }
