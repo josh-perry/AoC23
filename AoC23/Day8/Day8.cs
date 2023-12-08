@@ -81,19 +81,14 @@ public class Day8 : IDay
         while (true)
         {
             var currentInstruction = network.Directions[index % network.Directions.Count];
-            
-            switch (currentInstruction)
+
+            currentNode = currentInstruction switch
             {
-                case Direction.L:
-                    currentNode = network.Nodes[currentNode.Left];
-                    break;
-                case Direction.R:
-                    currentNode = network.Nodes[currentNode.Right];
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            
+                Direction.L => network.Nodes[currentNode.Left],
+                Direction.R => network.Nodes[currentNode.Right],
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
             if (currentNode.Name == "ZZZ")
             {
                 return (index + 1).ToString();
@@ -102,9 +97,43 @@ public class Day8 : IDay
             index++;
         }
     }
-
+    
     public string Part2(string input)
     {
-        return string.Empty;
+        var network = ParseInput(input);
+
+        var currentNodes = network.Nodes
+            .Where(x => x.Key.EndsWith("A"))
+            .ToArray();
+        
+        var numberOfStepsForNode = new Dictionary<string, int>();
+
+        foreach (var currentNode in currentNodes)
+        {
+            var index = 0;
+            var node = currentNode.Value;
+        
+            while (true)
+            {
+                var currentInstruction = network.Directions[index % network.Directions.Count];
+
+                node = currentInstruction switch
+                {
+                    Direction.L => network.Nodes[node.Left],
+                    Direction.R => network.Nodes[node.Right],
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                if (node.Name.EndsWith("Z"))
+                {
+                    numberOfStepsForNode.Add(currentNode.Key, index + 1);
+                    break;
+                }
+
+                index++;
+            }
+        }
+
+        return Mathx.GetLCMOfList(numberOfStepsForNode.Select(x => x.Value).ToList()).ToString();
     }
 }
