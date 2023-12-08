@@ -12,7 +12,9 @@ public class TestDay
     [InlineData(5, "35")]
     [InlineData(6, "288")]
     [InlineData(7, "6440")]
-    public void should_give_expected_output_for_mini_input_part_1(int dayNumber, string expected)
+    [InlineData(8, "2")]
+    [InlineData(8, "6", "mini_part1_2")]
+    public void should_give_expected_output_for_mini_input_part_1(int dayNumber, string expected, string inputFileName = "mini_part1")
     {
         // Arrange
         var day = Assembly.GetAssembly(typeof(IDay))
@@ -22,7 +24,7 @@ public class TestDay
             .First(x => x.Day == dayNumber);
         
         // Act
-        var result = day.Part1(File.ReadAllText($"Inputs\\day{dayNumber}_mini_part1.txt"));
+        var result = day.Part1(File.ReadAllText($"Inputs\\day{dayNumber}_{inputFileName}.txt"));
         
         // Assert
         Assert.Equal(expected, result);
