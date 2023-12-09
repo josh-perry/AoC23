@@ -67,6 +67,30 @@ public class Day9 : IDay
         return differences.First().Last();
     }
     
+    private int PredictLastValue(List<int> history)
+    {
+        var differences = new List<List<int>>();
+        
+        GetDifferences(history, differences);
+        differences.Insert(0, history);
+
+        for (var index = differences.Count - 1; index >= 0; index--)
+        {
+            var difference = differences[index];
+            
+            if (index == differences.Count - 1)
+            {
+                difference.Insert(0, 0);
+                continue;
+            }
+
+            var firstValue = difference.First();
+            difference.Insert(0, firstValue - differences[index + 1].First());
+        }
+
+        return differences.First().First();
+    }
+    
     public string Part1(string input)
     {
         var report = ParseInput(input);
@@ -77,6 +101,9 @@ public class Day9 : IDay
     
     public string Part2(string input)
     {
-        return string.Empty;
+        var report = ParseInput(input);
+        var sum = report.History.Sum(PredictLastValue);
+
+        return sum.ToString();
     }
 }
