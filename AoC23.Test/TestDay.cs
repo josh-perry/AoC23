@@ -16,6 +16,7 @@ public class TestDay
     [InlineData(8, "6", "mini_part1_2")]
     [InlineData(9, "114")]
     [InlineData(10, "8")]
+    [InlineData(11, "374")]
     public void should_give_expected_output_for_mini_input_part_1(int dayNumber, string expected, string inputFileName = "mini_part1")
     {
         // Arrange
